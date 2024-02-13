@@ -2,13 +2,14 @@ import socket
 import selectors
 
 from src.controllers.handle_client import Client
+import src.utils.functions as func
 
 
 class Server:
 
     def __init__(self):
-        self.HOST = ''
-        self.DEFAULT_PORT = 8000
+        self.HOST = func.get_environment_variable('host')
+        self.DEFAULT_PORT = int(func.get_environment_variable('port'))
 
     def start(self):
         """
