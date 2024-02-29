@@ -1,7 +1,7 @@
 import socket
 import selectors
 
-from src.controllers.handle_client import Client
+from src.controllers_server.handle_client import Client
 import src.utils.functions as func
 
 
