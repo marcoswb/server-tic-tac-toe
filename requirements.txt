@@ -1,4 +1,5 @@
-python-dotenv
-flask
+python-dotenv~=1.0.1
+flask~=3.0.2
 flask-cors
 flask-restful
+boto3~=1.34.66
