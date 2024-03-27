@@ -7,11 +7,12 @@ from src.models.Player import Player
 class Register(Resource):
     @staticmethod
     def post():
-        message = request.json
+        message = dict(request.json)
 
         player = Player()
-        player.set_nickname('marcos')
-        player.set_password('teste')
+        player.set_name(message.get('name'))
+        player.set_nickname(message.get('nickname'))
+        player.set_password(message.get('password'))
         player.set_logged(False)
         player.set_playing(False)
         player.save()
