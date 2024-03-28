@@ -14,7 +14,6 @@ class Player(TableDynamoDB):
 
     def get_dict_object(self):
         return {
-            'id': self.__id,
             'name': self.__name,
             'nickname': self.__nickname,
             'password': self.__password,
