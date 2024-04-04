@@ -49,6 +49,6 @@ class TableDynamoDB:
         """
         tables = []
         for table in self.__dyn_resource.tables.all():
-            tables.append(table)
+            tables.append(table.name)
 
         return tables
