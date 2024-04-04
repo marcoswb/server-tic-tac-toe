@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import request, Response
+from flask import request
 
 from src.models.Player import Player
 from src.utils.ResponseJson import ResponseJson
@@ -7,6 +7,7 @@ from src.utils.functions import *
 
 
 class Register(Resource):
+
     @staticmethod
     def post():
         message = dict(request.json)
@@ -15,11 +16,20 @@ class Register(Resource):
             return ResponseJson(400, code_message=1).json()
 
         player = Player()
-        player.set_name(message.get('name'))
-        player.set_nickname(message.get('nickname'))
-        player.set_password(message.get('password'))
-        player.set_logged(False)
-        player.set_playing(False)
-        player.save()
+        nickname = str(message.get('nickname')).lower()
+
+        registered_users  = player.get_registered_users()
+        if nickname in registered_users:
+            response = ResponseJson(400, code_message=2)
+            response.add_key_in_return_message('users', registered_users)
+            return response.json()
+
+        player.create_register({
+            'name': message.get('name'),
+            'nickname': message.get('nickname'),
+            'password': message.get('password'),
+            'logged': False,
+            'playing': False
+        })
 
         return ResponseJson(200).json()

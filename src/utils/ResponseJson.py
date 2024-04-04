@@ -12,10 +12,13 @@ class ResponseJson:
         self.__data = None
 
         if code_message:
-            self.__data = json.dumps({'message': messages.get(int(code_message))})
+            self.__data = messages.get(int(code_message))
+
+    def add_key_in_return_message(self, key, value):
+        self.__data[key] = value
 
     def json(self):
         if self.__data:
-            return Response(response=self.__data, status=self.__status_code, headers=self.__response_headers)
+            return Response(response=json.dumps(self.__data), status=self.__status_code, headers=self.__response_headers)
         else:
             return Response(status=self.__status_code, headers=self.__response_headers)

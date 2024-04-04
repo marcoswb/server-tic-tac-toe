@@ -5,33 +5,12 @@ class Player(TableDynamoDB):
 
     def __init__(self):
         super().__init__('Player')
-        self.__id = None
-        self.__name = None
-        self.__nickname = None
-        self.__password = None
-        self.__logged = None
-        self.__playing = None
 
-    def get_dict_object(self):
-        return {
-            'name': self.__name,
-            'nickname': self.__nickname,
-            'password': self.__password,
-            'logged': self.__logged,
-            'playing': self.__playing
-        }
+    def get_registered_users(self):
+        data = self._get_all_itens()
 
-    def set_name(self, name):
-        self.__name = name
+        list_nicknames = []
+        for item in data:
+            list_nicknames.append(item.get('some_data').get('nickname'))
 
-    def set_nickname(self, nickname):
-        self.__nickname = nickname
-
-    def set_password(self, password):
-        self.__password = password
-
-    def set_logged(self, logged ):
-        self.__logged = logged
-
-    def set_playing(self, playing):
-        self.__playing = playing
+        return list_nicknames
