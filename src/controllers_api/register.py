@@ -18,7 +18,7 @@ class Register(Resource):
         player = Player()
         nickname = str(message.get('nickname')).lower()
 
-        registered_users  = player.get_registered_users()
+        registered_users = player.get_registered_users()
         if nickname in registered_users:
             response = ResponseJson(400, code_message=2)
             response.add_key_in_return_message('users', registered_users)
@@ -27,7 +27,7 @@ class Register(Resource):
         player.create_register({
             'name': message.get('name'),
             'nickname': message.get('nickname'),
-            'password': message.get('password'),
+            'password': encrypt_password(message.get('password')),
             'logged': False,
             'playing': False
         })
