@@ -1,4 +1,6 @@
 messages = {
-    1: {'message': 'Some parameters are filled in incorrectly.'},
-    2: {'message': 'User registered.'}
+    1: {'message': 'Algum parâmetro está preenchido incorretamente.'},
+    2: {'message': 'Usuário já registrado.'},
+    3: {'message': 'Usuário não cadastrado.'},
+    4: {'message': 'Usuário ou senha incorreto.'}
 }

@@ -21,3 +21,7 @@ def encrypt_password(password):
     salt = bcrypt.gensalt()
     password_hash = bcrypt.hashpw(str(password).encode(), salt)
     return password_hash.decode('utf-8')
+
+
+def password_match(encrypted_password, user_password):
+    return bcrypt.checkpw(str(user_password).encode('utf-8'), str(encrypted_password).encode('utf-8'))

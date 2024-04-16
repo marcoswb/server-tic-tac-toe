@@ -6,30 +6,28 @@ from src.utils.ResponseJson import ResponseJson
 from src.utils.functions import *
 
 
-class Register(Resource):
+class Login(Resource):
 
     @staticmethod
     def post():
         message = dict(request.json)
 
-        if not valid_json_input(message, ['name', 'nickname', 'password']):
+        if not valid_json_input(message, ['nickname', 'password']):
             return ResponseJson(400, code_message=1).json()
 
         player = Player()
         nickname = str(message.get('nickname')).lower()
 
         registered_users = player.get_registered_users()
-        if nickname in registered_users:
-            response = ResponseJson(400, code_message=2)
+        if nickname not in registered_users:
+            response = ResponseJson(400, code_message=3)
             response.add_key_in_return_message('users', registered_users)
             return response.json()
 
-        player.create_register({
-            'name': message.get('name'),
-            'nickname': message.get('nickname'),
-            'password': encrypt_password(message.get('password')),
-            'logged': False,
-            'playing': False
-        }, message.get('nickname'))
+        correct_password = player.check_password(message.get('nickname'), message.get('password'))
+        if not correct_password:
+            response = ResponseJson(400, code_message=4)
+            return response.json()
 
+        player.login(message.get('nickname'))
         return ResponseJson(200).json()

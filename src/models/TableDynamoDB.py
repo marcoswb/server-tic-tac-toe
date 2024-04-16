@@ -1,12 +1,13 @@
 import boto3
+from boto3.dynamodb.conditions import Key
 import uuid
-import random
 
 
 class TableDynamoDB:
 
-    def __init__(self, table):
+    def __init__(self, table, name_primary_key):
         self.__table = table
+        self.__name_primary_key = str(name_primary_key)
         self.__dyn_resource = boto3.resource('dynamodb')
         self.__data_register = {}
 
@@ -15,37 +16,31 @@ class TableDynamoDB:
     def _get_dict_object(self):
         return self.__data_register
 
-    def create_register(self, data):
+    def create_register(self, data, primary_key):
         self.__data_register = dict(data)
-        self._save()
+        self._save(primary_key)
 
-    def _save(self):
+    def _save(self, primary_key):
         table = self.__dyn_resource.Table(self.__table)
 
         table.put_item(
             Item={
-                "id": str(uuid.uuid4()),
-                "sort_key": random.randint(1, 100),
-                "some_data": self._get_dict_object(),
+                self.__name_primary_key: primary_key,
+                'id': str(uuid.uuid4()),
+                'some_data': self._get_dict_object(),
             }
         )
 
     def _create_table(self):
         if self.__table not in self._get_list_tables():
-            params = {
-                'TableName': self.__table,
-                'KeySchema': [
-                    {'AttributeName': 'id', 'KeyType': 'HASH'},
-                    {'AttributeName': 'sort_key', 'KeyType': 'RANGE'}
-                ],
-                'AttributeDefinitions': [
-                    {'AttributeName': 'id', 'AttributeType': 'S'},
-                    {'AttributeName': 'sort_key', 'AttributeType': 'N'}
-                ],
-                'ProvisionedThroughput': {'ReadCapacityUnits': 10, 'WriteCapacityUnits': 10},
-            }
+            params = self._get_params_table()
             table = self.__dyn_resource.create_table(**params)
             table.wait_until_exists()
+
+    @staticmethod
+    def _get_params_table():
+        params = {}
+        return params
 
     def _get_all_itens(self):
         table = self.__dyn_resource.Table(self.__table)
@@ -69,3 +64,15 @@ class TableDynamoDB:
             tables.append(table.name)
 
         return tables
+
+    def _get_item_by_sort_key(self, key1, value1):
+        table = self.__dyn_resource.Table(self.__table)
+
+        response = table.query(
+            KeyConditionExpression=Key(key1).eq(value1)
+        )
+
+        if len(response['Items']) > 0:
+            return response['Items'][0]['some_data']
+        else:
+            return {}
