@@ -1,5 +1,5 @@
 import boto3
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import Key, Attr
 import uuid
 
 
@@ -76,3 +76,32 @@ class TableDynamoDB:
             return response['Items'][0]['some_data']
         else:
             return {}
+
+    def _get_id_item(self, value_pk):
+        table = self.__dyn_resource.Table(self.__table)
+
+        response = table.query(
+            KeyConditionExpression=Key(self.__name_primary_key).eq(value_pk)
+        )
+
+        if len(response['Items']) > 0:
+            return response['Items'][0].get('id')
+        else:
+            return None
+
+    def update_register(self, primary_key, key_update, new_value):
+        try:
+            table = self.__dyn_resource.Table(self.__table)
+            id_value = self._get_id_item(primary_key)
+
+            table.update_item(
+                Key={self.__name_primary_key: primary_key, 'id': id_value},
+                UpdateExpression=f"set some_data.{key_update} = :newValue",
+                ExpressionAttributeValues={":newValue": new_value},
+                ReturnValues="UPDATED_NEW"
+            )
+
+            return True
+        except Exception as error:
+            print(error)
+            return False

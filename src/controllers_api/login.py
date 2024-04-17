@@ -29,5 +29,9 @@ class Login(Resource):
             response = ResponseJson(400, code_message=4)
             return response.json()
 
-        player.login(message.get('nickname'))
-        return ResponseJson(200).json()
+        logged = player.login(message.get('nickname'))
+        if logged:
+            return ResponseJson(200).json()
+        else:
+            response = ResponseJson(400, code_message=5)
+            return response.json()

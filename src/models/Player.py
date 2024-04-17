@@ -41,9 +41,5 @@ class Player(TableDynamoDB):
             return False
 
     def login(self, nickname):
-        print('logar', nickname)
-        # data = self._get_all_itens()
-        #
-        # list_nicknames = []
-        # for item in data:
-        #     list_nicknames.append(item.get('some_data').get('nickname'))
+        response = self.update_register(nickname, 'logged', True)
+        return response
