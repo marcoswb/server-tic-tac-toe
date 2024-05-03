@@ -33,6 +33,17 @@ class Player(TableDynamoDB):
 
         return list_nicknames
 
+    def get_free_users(self):
+        data = self._get_all_itens()
+
+        list_nicknames = []
+        for item in data:
+            aux_item = item.get('some_data')
+            if aux_item.get('logged') and not aux_item.get('playing'):
+                list_nicknames.append(aux_item.get('nickname'))
+
+        return list_nicknames
+
     def check_password(self, nickname, password):
         data = self._get_item_by_sort_key('nickname', nickname)
         if password_match(data.get('password'), password):
