@@ -33,13 +33,13 @@ class Player(TableDynamoDB):
 
         return list_nicknames
 
-    def get_free_users(self):
+    def get_free_users(self, nickname):
         data = self._get_all_itens()
 
         list_nicknames = []
         for item in data:
             aux_item = item.get('some_data')
-            if aux_item.get('logged') and not aux_item.get('playing'):
+            if aux_item.get('logged') and not aux_item.get('playing') and aux_item.get('nickname') != nickname:
                 list_nicknames.append(aux_item.get('nickname'))
 
         return list_nicknames
