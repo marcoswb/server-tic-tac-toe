@@ -54,3 +54,7 @@ class Player(TableDynamoDB):
     def login(self, nickname):
         response = self.update_register(nickname, 'logged', True)
         return response
+
+    def logout(self, nickname):
+        response = self.update_register(nickname, 'logged', False)
+        return response
