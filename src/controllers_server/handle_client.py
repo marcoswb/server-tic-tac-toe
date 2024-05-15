@@ -5,16 +5,20 @@ import src.utils.functions as func
 
 class Client:
 
-    def __init__(self, ip_client, client):
+    def __init__(self):
         """
         Class to handle client connection
         """
-        self.__ip_client = ip_client
-        self.__client = client
+        self.__ip_client = None
+        self.__client = None
         self.SIZE_BUFFER_PACKETS = int(func.get_environment_variable('size_buffer_packets'))
 
-        thread_client = Thread(target=self.handle_client)
-        thread_client.start()
+    def init(self, ip_client, client):
+        self.__ip_client = ip_client
+        self.__client = client
+
+        # thread_client = Thread(target=self.handle_client)
+        # thread_client.start()
 
     def handle_client(self):
         print(f'Conectado a {self.__ip_client}')
@@ -39,6 +43,15 @@ class Client:
         """
         response = self.__client.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
         return response
+
+    def send_data(self, instruction):
+        self.__client.sendall(str(instruction).encode('utf-8'))
+
+    def get_ip_client(self):
+        return self.__ip_client
+
+    def get_connection(self):
+        return self.__client
 
     def close_client(self):
         print(f'Conexão com o client {self.__ip_client} finalizada')

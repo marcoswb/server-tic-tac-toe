@@ -1,7 +1,8 @@
 import socket
 import selectors
+from threading import Thread
 
-from src.controllers_server.handle_client import Client
+from src.controllers_server.handle_game import Game
 import src.utils.functions as func
 
 
@@ -10,6 +11,8 @@ class Server:
     def __init__(self):
         self.HOST = func.get_environment_variable('host')
         self.DEFAULT_PORT = int(func.get_environment_variable('port'))
+        self.__player_01 = None
+        self.__player_02 = None
 
     def start(self):
         """
@@ -39,14 +42,27 @@ class Server:
         finally:
             selector.close()
 
-    @staticmethod
-    def accept_connection(server):
+    def accept_connection(self, server):
         """
         Accepts connections from clients
         """
         client, address = server.accept()
         ip_client = address[0]
-        Client(ip_client, client)
+
+        if not self.__player_01:
+            self.__player_01 = (client, ip_client)
+        else:
+            self.__player_02 = (client, ip_client)
+
+            Thread(target=self.start_game, args=(self.__player_01, self.__player_02, )).start()
+            self.__player_01 = None
+            self.__player_02 = None
+
+    @staticmethod
+    def start_game(player_01, player_02):
+        game = Game()
+        game.set_players(player_01, player_02)
+        game.start_game()
 
 
 if __name__ == '__main__':
