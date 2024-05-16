@@ -11,6 +11,7 @@ class Server:
     def __init__(self):
         self.HOST = func.get_environment_variable('host')
         self.DEFAULT_PORT = int(func.get_environment_variable('port'))
+        self.SIZE_BUFFER_PACKETS = int(func.get_environment_variable('size_buffer_packets'))
         self.__player_01 = None
         self.__player_02 = None
 
@@ -49,6 +50,11 @@ class Server:
         client, address = server.accept()
         ip_client = address[0]
 
+        confirm = self.confirm_identity(client)
+        if not confirm:
+            client.close()
+            return
+
         if not self.__player_01:
             self.__player_01 = (client, ip_client)
         else:
@@ -57,6 +63,16 @@ class Server:
             Thread(target=self.start_game, args=(self.__player_01, self.__player_02, )).start()
             self.__player_01 = None
             self.__player_02 = None
+
+    def confirm_identity(self, client):
+        """
+        Wait for the confirmation message from client
+        """
+        response = client.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
+        if response == 'entrar':
+            return True
+        else:
+            return False
 
     @staticmethod
     def start_game(player_01, player_02):

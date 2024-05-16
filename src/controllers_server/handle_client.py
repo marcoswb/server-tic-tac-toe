@@ -1,5 +1,3 @@
-from threading import Thread
-
 import src.utils.functions as func
 
 
@@ -16,26 +14,6 @@ class Client:
     def init(self, ip_client, client):
         self.__ip_client = ip_client
         self.__client = client
-
-        # thread_client = Thread(target=self.handle_client)
-        # thread_client.start()
-
-    def handle_client(self):
-        print(f'Conectado a {self.__ip_client}')
-
-        data = self.wait_for_data_client()
-        if data == 'read':
-            # SOCKET DE LEITURA
-            print('socket de escrita')
-        elif data == 'write':
-            # SOCKET DE ESCRITA
-            print('socket de leitura')
-
-        while data:
-            data = self.wait_for_data_client()
-            print(data)
-
-        self.close_client()
 
     def wait_for_data_client(self):
         """

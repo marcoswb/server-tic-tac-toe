@@ -11,64 +11,40 @@ class Client:
         self.host = func.get_environment_variable('host')
         self.port = int(func.get_environment_variable('port'))
         self.SIZE_BUFFER_PACKETS = int(func.get_environment_variable('size_buffer_packets'))
-        self.messages = [
-            'Iniciar',
-            'Teste',
-            'Teste 2',
-            'Python 3'
-        ]
-
-        self.socket_instance_read = None
-        self.socket_instance_write = None
 
     def start(self):
-        self.socket_instance_read = self.create_socket_instance()
-        print('abriu o socket')
+        print('abrir o socket')
+        socket_instance = self.create_socket_instance()
 
-        first_response = self.socket_instance_read.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
+        self.send_confirmation_message(socket_instance)
+
+        first_response = socket_instance.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
         while True:
             if first_response == 'await':
-                response = self.socket_instance_read.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
+                response = socket_instance.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
                 print(f'MENSAGEM RETORNADA DO SERVIDOR {response}')
 
                 message = input('Escreve alguma coisa: ')
-                self.socket_instance_read.send(message.encode('utf-8'))
+                socket_instance.send(message.encode('utf-8'))
+            elif first_response == 'play':
+                message = input('Escreve alguma coisa: ')
+                socket_instance.send(message.encode('utf-8'))
+
+                response = socket_instance.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
+                print(f'MENSAGEM RETORNADA DO SERVIDOR {response}')
             else:
-                message = input('Escreve alguma coisa: ')
-                self.socket_instance_read.send(message.encode('utf-8'))
-
-                response = self.socket_instance_read.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
-                print(f'MENSAGEM RETORNADA DO SERVIDOR {response}')
-
-        # sleep(10)
-        # self.socket_instance_write = self.create_socket_instance('write')
-        # print('abriu o socket de escrita')
-        #
-        # thread_read_message = Thread(target=self.read_messages)
-        # thread_read_message.start()
-        #
-        # thread_write_message = Thread(target=self.send_messages)
-        # thread_write_message.start()
-
-        while True:
-            pass
+                break
 
     def create_socket_instance(self):
-        client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        client.connect((self.host, self.port))
-        # client.send(str.encode(message))
+        socket_instance = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        socket_instance.connect((self.host, self.port))
 
-        return client
+        return socket_instance
 
-    def send_messages(self):
-        for message in self.messages:
-            self.socket_instance_write.send(str.encode(message))
-            sleep(5)
-
-    def read_messages(self):
-        while True:
-            response = self.socket_instance_read.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
-            print(f'MENSAGEM RETORNADA DO SERVIDOR {response}')
+    @staticmethod
+    def send_confirmation_message(socket_instance):
+        message = input('informe a palavra secreta: ')
+        socket_instance.send(message.encode('utf-8'))
 
 
 if __name__ == '__main__':
