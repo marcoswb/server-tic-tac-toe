@@ -1,6 +1,5 @@
 import socket
-from time import sleep
-from threading import Thread
+import json
 
 import src.utils.functions as func
 
@@ -21,19 +20,25 @@ class Client:
         first_response = socket_instance.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
         while True:
             if first_response == 'await':
-                response = socket_instance.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
+                response = self.decode_message(socket_instance.recv(self.SIZE_BUFFER_PACKETS))
                 print(f'MENSAGEM RETORNADA DO SERVIDOR {response}')
 
+                if response.get('action') == 'end_game':
+                    break
+
                 message = input('Escreve alguma coisa: ')
-                socket_instance.send(message.encode('utf-8'))
+                socket_instance.send(self.encode_message(message))
             elif first_response == 'play':
                 message = input('Escreve alguma coisa: ')
-                socket_instance.send(message.encode('utf-8'))
+                socket_instance.send(self.encode_message(message))
 
-                response = socket_instance.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
+                response = self.decode_message(socket_instance.recv(self.SIZE_BUFFER_PACKETS))
                 print(f'MENSAGEM RETORNADA DO SERVIDOR {response}')
-            else:
-                break
+
+                if response.get('action') == 'end_game':
+                    break
+
+        socket_instance.close()
 
     def create_socket_instance(self):
         socket_instance = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -46,8 +51,22 @@ class Client:
         message = input('informe a palavra secreta: ')
         socket_instance.send(message.encode('utf-8'))
 
+    @staticmethod
+    def decode_message(message):
+        message.decode('utf8')
+        return json.loads(message)
+
+    @staticmethod
+    def encode_message(message, action='play'):
+        data = {
+            'message': message,
+            'action': action
+        }
+
+        return json.dumps(data).encode('utf-8')
+
 
 if __name__ == '__main__':
     app = Client()
     app.start()
-    print('ACABOU')
+    print('ACABOUUUUU')
