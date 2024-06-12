@@ -1,3 +1,4 @@
+import json
 import socket
 import selectors
 from threading import Thread
@@ -50,15 +51,15 @@ class Server:
         client, address = server.accept()
         ip_client = address[0]
 
-        confirm = self.confirm_identity(client)
+        confirm, nickname = self.confirm_identity(client)
         if not confirm:
             client.close()
             return
 
         if not self.__player_01:
-            self.__player_01 = (client, ip_client)
+            self.__player_01 = (client, ip_client, nickname)
         else:
-            self.__player_02 = (client, ip_client)
+            self.__player_02 = (client, ip_client, nickname)
 
             Thread(target=self.start_game, args=(self.__player_01, self.__player_02, )).start()
             self.__player_01 = None
@@ -68,11 +69,14 @@ class Server:
         """
         Wait for the confirmation message from client
         """
-        response = client.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
-        if response == 'entrar':
-            return True
+        response = json.loads(client.recv(self.SIZE_BUFFER_PACKETS).decode('utf8'))
+        autentication = response.get('message')
+        nickname = response.get('player')
+
+        if autentication == 'entrar':
+            return True, nickname
         else:
-            return False
+            return False, nickname
 
     @staticmethod
     def start_game(player_01, player_02):

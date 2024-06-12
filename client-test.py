@@ -17,9 +17,9 @@ class Client:
 
         self.send_confirmation_message(socket_instance)
 
-        first_response = socket_instance.recv(self.SIZE_BUFFER_PACKETS).decode('utf8')
+        first_response = self.decode_message(socket_instance.recv(self.SIZE_BUFFER_PACKETS))
         while True:
-            if first_response == 'await':
+            if first_response.get('message') == 'await':
                 response = self.decode_message(socket_instance.recv(self.SIZE_BUFFER_PACKETS))
                 print(f'MENSAGEM RETORNADA DO SERVIDOR {response}')
 
@@ -28,7 +28,7 @@ class Client:
 
                 message = input('Escreve alguma coisa: ')
                 socket_instance.send(self.encode_message(message))
-            elif first_response == 'play':
+            elif first_response.get('message') == 'play':
                 message = input('Escreve alguma coisa: ')
                 socket_instance.send(self.encode_message(message))
 
@@ -46,10 +46,9 @@ class Client:
 
         return socket_instance
 
-    @staticmethod
-    def send_confirmation_message(socket_instance):
-        message = input('informe a palavra secreta: ')
-        socket_instance.send(message.encode('utf-8'))
+    def send_confirmation_message(self, socket_instance):
+        message = 'entrar'
+        socket_instance.send(self.encode_message(message, player='marcão monstro'))
 
     @staticmethod
     def decode_message(message):
@@ -57,10 +56,11 @@ class Client:
         return json.loads(message)
 
     @staticmethod
-    def encode_message(message, action='play'):
+    def encode_message(message, action='play', player=''):
         data = {
             'message': message,
-            'action': action
+            'action': action,
+            'player': player
         }
 
         return json.dumps(data).encode('utf-8')
