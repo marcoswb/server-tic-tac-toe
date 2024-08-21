@@ -18,16 +18,20 @@ class Client:
         self.send_confirmation_message(socket_instance)
 
         first_response = self.decode_message(socket_instance.recv(self.SIZE_BUFFER_PACKETS))
+        print(first_response)
         while True:
             if first_response.get('message') == 'await':
                 response = self.decode_message(socket_instance.recv(self.SIZE_BUFFER_PACKETS))
                 print(f'MENSAGEM RETORNADA DO SERVIDOR {response}')
 
-                if response.get('action') == 'end_game':
+                action = response.get('action')
+                if action != 'play':
+                    print(response)
                     break
 
                 message = input('Escreve alguma coisa: ')
                 socket_instance.send(self.encode_message(message))
+
             elif first_response.get('message') == 'play':
                 message = input('Escreve alguma coisa: ')
                 socket_instance.send(self.encode_message(message))
@@ -35,7 +39,9 @@ class Client:
                 response = self.decode_message(socket_instance.recv(self.SIZE_BUFFER_PACKETS))
                 print(f'MENSAGEM RETORNADA DO SERVIDOR {response}')
 
-                if response.get('action') == 'end_game':
+                action = response.get('action')
+                if action != 'play':
+                    print(response)
                     break
 
         socket_instance.close()

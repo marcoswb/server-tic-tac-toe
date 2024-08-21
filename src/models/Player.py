@@ -44,6 +44,25 @@ class Player(TableDynamoDB):
 
         return list_nicknames
 
+    def get_user_status(self, ):
+        data = self._get_all_itens()
+
+        result = {}
+        for item in data:
+            aux_item = item.get('some_data')
+            if aux_item.get('logged'):
+                if aux_item.get('playing'):
+                    result.setdefault('playing', [])
+                    result['playing'].append(aux_item.get('nickname'))
+                else:
+                    result.setdefault('online', [])
+                    result['online'].append(aux_item.get('nickname'))
+            else:
+                result.setdefault('offline', [])
+                result['offline'].append(aux_item.get('nickname'))
+
+        return dict(sorted(result.items(), reverse=True))
+
     def check_password(self, nickname, password):
         data = self._get_item_by_sort_key('nickname', nickname)
         if password_match(data.get('password'), password):
