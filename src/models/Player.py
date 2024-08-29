@@ -1,6 +1,7 @@
 from src.models.TableDynamoDB import TableDynamoDB
 from src.utils.functions import password_match
 
+
 class Player(TableDynamoDB):
 
     def __init__(self):
