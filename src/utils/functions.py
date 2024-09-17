@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 import os
 import bcrypt
+from datetime import datetime
 
 load_dotenv()
 
@@ -25,3 +26,7 @@ def encrypt_password(password):
 
 def password_match(encrypted_password, user_password):
     return bcrypt.checkpw(str(user_password).encode('utf-8'), str(encrypted_password).encode('utf-8'))
+
+
+def get_current_time():
+    return datetime.today().strftime('%Y-%m-%d %H:%M:%S')

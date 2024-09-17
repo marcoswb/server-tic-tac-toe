@@ -34,7 +34,8 @@ class History(Resource):
         history.create_register({
             'nickname': message.get('nickname'),
             'oponent': message.get('oponent'),
-            'result': message.get('result')
+            'result': message.get('result'),
+            'time': get_current_time()
         }, message.get('nickname'))
 
         return ResponseJson(200).json()

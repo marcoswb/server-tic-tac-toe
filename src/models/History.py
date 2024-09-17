@@ -1,5 +1,4 @@
 from src.models.TableDynamoDB import TableDynamoDB
-from src.utils.functions import password_match
 
 
 class History(TableDynamoDB):
@@ -28,11 +27,10 @@ class History(TableDynamoDB):
     def get_history(self, nickname):
         data = self._get_all_itens()
 
-        result = {}
+        result = []
         for item in data:
             aux_item = item.get('some_data')
             if aux_item.get('nickname') == nickname:
-                result.setdefault(aux_item.get('result'), [])
-                result[aux_item.get('result')].append(aux_item.get('oponent'))
+                result.append(aux_item)
 
-        return result
+        return sorted(result, key=lambda d: d['time'])
