@@ -6,6 +6,7 @@ from src.controllers_api.login import Login
 from src.controllers_api.register import Register
 from src.controllers_api.user_free import UserFree
 from src.controllers_api.user_status import UserStatus
+from src.controllers_api.invite_game import InviteGame
 from src.controllers_api.history import History
 from src.controllers_api.logout import Logout
 
@@ -18,6 +19,7 @@ api.add_resource(Login, '/login')
 api.add_resource(Register, '/register')
 api.add_resource(UserFree, '/users/free')
 api.add_resource(UserStatus, '/users/status')
+api.add_resource(InviteGame, '/invite')
 api.add_resource(History, '/history')
 api.add_resource(Logout, '/logout')
 
