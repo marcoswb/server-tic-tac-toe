@@ -1,0 +1,6 @@
+python-dotenv
+flask
+flask-cors
+flask-restful
+boto3
+bcrypt
