@@ -66,7 +66,8 @@ class Client:
         data = {
             'message': message,
             'action': action,
-            'player': player
+            'player': player,
+            'opponent': 'random'
         }
 
         return json.dumps(data).encode('utf-8')
