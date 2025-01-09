@@ -1,3 +1,4 @@
+import datetime
 import json
 import socket
 import selectors
@@ -15,6 +16,7 @@ class Server:
         self.SIZE_BUFFER_PACKETS = int(func.get_environment_variable('size_buffer_packets'))
         self.__player_01 = None
         self.__player_02 = None
+        self.__challenged_users = {}
 
     def start(self):
         """
@@ -51,32 +53,43 @@ class Server:
         client, address = server.accept()
         ip_client = address[0]
 
-        confirm, nickname = self.confirm_identity(client)
+        confirm, nickname, opponent = self.confirm_identity(client)
         if not confirm:
             client.close()
             return
 
-        if not self.__player_01:
-            self.__player_01 = (client, ip_client, nickname)
-        else:
-            self.__player_02 = (client, ip_client, nickname)
+        if opponent == 'random':
+            if not self.__player_01:
+                self.__player_01 = (client, ip_client, nickname)
+            else:
+                self.__player_02 = (client, ip_client, nickname)
 
-            Thread(target=self.start_game, args=(self.__player_01, self.__player_02, )).start()
-            self.__player_01 = None
-            self.__player_02 = None
+                Thread(target=self.start_game, args=(self.__player_01, self.__player_02, )).start()
+                self.__player_01 = None
+                self.__player_02 = None
+        else:
+            if self.__challenged_users.get(nickname):
+                player_01 = self.__challenged_users.get(nickname)
+                player_02 = (client, ip_client, nickname)
+                Thread(target=self.start_game, args=(player_01, player_02, )).start()
+                self.__challenged_users.pop(nickname)
+            else:
+                self.__challenged_users[opponent] = (client, ip_client, nickname)
+
 
     def confirm_identity(self, client):
         """
         Wait for the confirmation message from client
         """
         response = json.loads(client.recv(self.SIZE_BUFFER_PACKETS).decode('utf8'))
-        autentication = response.get('message')
+        authentication = response.get('message')
         nickname = response.get('player')
+        opponent = response.get('opponent')
 
-        if autentication == 'entrar':
-            return True, nickname
+        if authentication == 'entrar':
+            return True, nickname, opponent
         else:
-            return False, nickname
+            return False, nickname, opponent
 
     @staticmethod
     def start_game(player_01, player_02):
