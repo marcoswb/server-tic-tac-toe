@@ -1,3 +1,5 @@
+import uuid
+
 from src.models.TableDynamoDB import TableDynamoDB
 from src.utils.functions import password_match
 
@@ -73,8 +75,22 @@ class Player(TableDynamoDB):
 
     def login(self, nickname):
         response = self.update_register(nickname, 'logged', True)
-        return response
+        socket_key = self.generate_socket_key(nickname)
+        if response and socket_key:
+            return socket_key
+        else:
+            return False
 
     def logout(self, nickname):
         response = self.update_register(nickname, 'logged', False)
+        self.update_register(nickname, 'socket_key', '')
         return response
+
+    def generate_socket_key(self, nickname):
+        socket_key = str(uuid.uuid4())
+        self.update_register(nickname, 'socket_key', socket_key)
+        return socket_key
+
+    def get_socket_key(self, nickname):
+        data = self._get_item_by_sort_key('nickname', nickname)
+        return data.get('socket_key')

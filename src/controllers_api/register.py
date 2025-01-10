@@ -29,7 +29,8 @@ class Register(Resource):
             'nickname': message.get('nickname'),
             'password': encrypt_password(message.get('password')),
             'logged': False,
-            'playing': False
+            'playing': False,
+            'socket_key': ''
         }, message.get('nickname'))
 
         return ResponseJson(200).json()

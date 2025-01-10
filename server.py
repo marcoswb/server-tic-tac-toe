@@ -6,6 +6,7 @@ from threading import Thread
 
 from src.controllers_server.handle_game import Game
 import src.utils.functions as func
+from src.models.Player import Player
 
 
 class Server:
@@ -82,11 +83,13 @@ class Server:
         Wait for the confirmation message from client
         """
         response = json.loads(client.recv(self.SIZE_BUFFER_PACKETS).decode('utf8'))
-        authentication = response.get('message')
         nickname = response.get('player')
         opponent = response.get('opponent')
 
-        if authentication == 'entrar':
+        authentication_client = response.get('socket_key')
+        original_socket_key = Player().get_socket_key(nickname)
+
+        if authentication_client == original_socket_key:
             return True, nickname, opponent
         else:
             return False, nickname, opponent

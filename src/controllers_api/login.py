@@ -29,9 +29,11 @@ class Login(Resource):
             response = ResponseJson(400, code_message=4)
             return response.json()
 
-        logged = player.login(message.get('nickname'))
-        if logged:
-            return ResponseJson(200).json()
+        socket_key = player.login(message.get('nickname'))
+        if socket_key:
+            response = ResponseJson(200)
+            response.add_key_in_return_message('socket_key', socket_key)
+            return response.json()
         else:
             response = ResponseJson(400, code_message=5)
             return response.json()
