@@ -1,4 +1,3 @@
-import datetime
 import json
 import socket
 import selectors
@@ -23,18 +22,15 @@ class Server:
         """
         Starts the server and waits for clients to connect
         """
-        # start server
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.bind((self.HOST, self.DEFAULT_PORT))
         server.listen()
         print(f'listening on {self.HOST}:{self.DEFAULT_PORT}')
 
-        # register server in selector
         selector = selectors.DefaultSelector()
         selector.register(server, selectors.EVENT_READ, self.accept_connection)
 
         try:
-            # wait a new connections
             while True:
                 events = selector.select()
                 for key, _ in events:

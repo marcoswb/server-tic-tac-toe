@@ -9,7 +9,6 @@ class UserStatus(Resource):
     @staticmethod
     def get():
         player = Player()
-
         result = player.get_user_status()
         if result:
             response = ResponseJson(200)

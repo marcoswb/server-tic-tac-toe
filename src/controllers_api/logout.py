@@ -24,8 +24,8 @@ class Logout(Resource):
             response.add_key_in_return_message('users', registered_users)
             return response.json()
 
-        logged = player.logout(message.get('nickname'))
-        if logged:
+        logout = player.logout(message.get('nickname'))
+        if logout:
             return ResponseJson(200).json()
         else:
             response = ResponseJson(400, code_message=5)

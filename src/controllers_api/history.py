@@ -30,7 +30,6 @@ class History(Resource):
             return ResponseJson(400, code_message=1).json()
 
         history = HistoryModel()
-
         history.create_register({
             'nickname': message.get('nickname'),
             'oponent': message.get('oponent'),

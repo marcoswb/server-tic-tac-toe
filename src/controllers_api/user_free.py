@@ -12,7 +12,6 @@ class UserFree(Resource):
         nickname = request.args.get('nickname')
 
         player = Player()
-
         free_users = player.get_free_users(nickname)
         if free_users:
             response = ResponseJson(200)
