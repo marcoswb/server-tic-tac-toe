@@ -1,6 +1,6 @@
 # Servidor Jogo da Velha
 
-Esse projeto visa a criação de dois servidores(API e servidor socket) para o controle de um jogo da velha via Rede.
+Esse projeto visa a criação de dois servidores(API e servidor socket) para o controle de um jogo da velha via Rede, trabalhando em conjunto com [esse cliente java](https://github.com/marcoswb/client-tic-tac-toe) foi criado um sistema completo de Jogo da Velha.
 
 ### API
 A API foi feita utilizando o framework Flask e é responsável por controlar o login/registro dos jogadores, além de fornecer informações que serão tratadas e demonstradas no frontend.
